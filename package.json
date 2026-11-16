@@ -1,0 +1,18 @@
+{
+  "name": "user-a",
+  "version": "1.0.0",
+  "description": "End-to-end test automation using Playwright, JavaScript, and collaborative Git workflows.",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git@github-sedigheh:Sedigheh-Ahadi/playwright-e2e-automation.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "@types/node": "^26.6.6"
+  }
+}
