@@ -5,25 +5,32 @@ test.describe('Registration Form Validation', () => {
 
   test('should display validation errors for empty required fields', async ({ page }) => {
 
-    await page.goto('https://playwrightlab.github.io/?utm_source=chatgpt.com');
+    await page.goto('https://playwrightlab.github.io');
 
     // Click Register without filling any fields
     await page.getByTestId('btn-register').click();
 
     // Verify validation messages
     await expect(page.getByTestId('error-fullname')).not.toBeEmpty();
-    await expect(page.getByTestId('error-email')).not.toBeEmpty();
-    await expect(page.getByTestId('error-password')).not.toBeEmpty();
-    await expect(page.getByTestId('error-terms')).not.toBeEmpty();
+    await expect(page.getByTestId('error-fullname')).toHaveText('Name is required');
 
+    await expect(page.getByTestId('error-email')).not.toBeEmpty();
+    await expect(page.getByTestId('error-email')).toHaveText('Valid email is required');
+
+    await expect(page.getByTestId('error-password')).not.toBeEmpty();
+    await expect(page.getByTestId('error-password')).toHaveText('Password must be at least 8 characters');
+
+
+    await expect(page.getByTestId('error-terms')).not.toBeEmpty();
+    await expect(page.getByTestId('error-terms')).toHaveText('You must accept the terms');
     // Verify registration was not successful
     await expect(page.getByTestId('form-success')).toBeHidden();
 
   });
 
-test('should successfully register with valid information', async ({ page }) => {
+  test('should successfully register with valid information', async ({ page }) => {
 
-    await page.goto('https://playwrightlab.github.io/?utm_source=chatgpt.com');
+    await page.goto('https://playwrightlab.github.io');
 
     // Fill textboxes
     await page.getByTestId('input-fullname').fill('Sedigheh Ahadi');
@@ -51,7 +58,7 @@ test('should successfully register with valid information', async ({ page }) => 
 
     // Fill biography
     await page.getByTestId('textarea-bio').fill(
-        'I am a QA Automation Engineer working with Playwright.'
+      'I am a QA Automation Engineer working with Playwright.'
     );
 
     // Accept terms and conditions
@@ -63,15 +70,15 @@ test('should successfully register with valid information', async ({ page }) => 
     // Verify successful registration
     await expect(page.getByTestId('form-success')).toBeVisible();
 
-});
+  });
 
-test('should reset all registration form fields', async ({ page }) => {
+  test('should reset all registration form fields', async ({ page }) => {
 
-    await page.goto('/');
+    await page.goto('https://playwrightlab.github.io');
 
     // Fill text fields
-    await page.getByTestId('input-fullname').fill('John Doe');
-    await page.getByTestId('input-email').fill('john@example.com');
+    await page.getByTestId('input-fullname').fill('Sedighe ahadi');
+    await page.getByTestId('input-email').fill('ahadi.sedi@example.com');
     await page.getByTestId('input-password').fill('Password123!');
     await page.getByTestId('input-phone').fill('+1 555 123 4567');
 
@@ -83,7 +90,7 @@ test('should reset all registration form fields', async ({ page }) => {
     await page.getByTestId('check-terms').check();
 
     // Fill the Bio field
-    await page.getByTestId('textarea-bio').fill('Playwright learner');
+    await page.getByTestId('textarea-bio').fill('Playwright developer');
 
     // Click Reset
     await page.getByTestId('btn-reset').click();
@@ -102,6 +109,27 @@ test('should reset all registration form fields', async ({ page }) => {
     await expect(page.getByTestId('check-python')).not.toBeChecked();
     await expect(page.getByTestId('check-terms')).not.toBeChecked();
 
-});
+  });
+
+  test('should display an error for an invalid email format', async ({ page }) => {
+
+    page.goto('https://playwrightlab.github.io');
+
+    await page.getByTestId('input-fullname').fill('Sedighe ahadi');
+    await page.getByTestId('input-email').fill('ahadi.sediexample.com');
+    await page.getByTestId('input-password').fill('Password123!');
+    await page.getByTestId('check-terms').check();
+    await page.getByTestId('btn-register').click();
+
+    const emailError = page.getByTestId('error-email');
+
+    await expect(emailError).toBeVisible();
+    await expect(emailError).toHaveText('Valid email is required');
+
+    await expect(page.getByTestId('form-success')).toBeHidden();
+
+
+
+  })
 })
 
