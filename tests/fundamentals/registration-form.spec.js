@@ -160,5 +160,38 @@ test('should allow selecting one gender and multiple skills', async ({ page }) =
 
 });
 
+
+
+
+test('should display an error when password is shorter than 8 characters', async ({ page }) => {
+
+      await page.goto('https://playwrightlab.github.io');
+
+    // Fill required fields with valid data, except password
+    await fillRequiredFields(page, {
+        password: 'Abc123!'
+    });
+
+    // Accept Terms & Conditions
+    await page.getByTestId('check-terms').check();
+
+    // Verify password length is less than 8
+    expect('Abc123!'.length).toBeLessThan(8);
+
+    // Click Register
+    await page.getByTestId('btn-register').click();
+
+    // Verify password validation error
+    const passwordError = page.getByTestId('error-password');
+
+    await expect(passwordError).toBeVisible();
+    await expect(passwordError).toHaveText('Password must be at least 8 characters');
+
+    // Verify registration was unsuccessful
+    await expect(page.getByTestId('form-success')).toBeHidden();
+
+});
+
+
 })
 
