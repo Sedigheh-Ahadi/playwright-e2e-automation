@@ -132,5 +132,33 @@ test.describe('Registration Form Validation', () => {
 
 
   })
+
+
+test('should allow selecting one gender and multiple skills', async ({ page }) => {
+
+    // Select Female
+    await page.getByTestId('radio-female').check();
+
+    await expect(page.getByTestId('radio-female')).toBeChecked();
+    await expect(page.getByTestId('radio-male')).not.toBeChecked();
+
+    // Change gender to Male
+    await page.getByTestId('radio-male').check();
+
+    await expect(page.getByTestId('radio-male')).toBeChecked();
+    await expect(page.getByTestId('radio-female')).not.toBeChecked();
+
+    // Select multiple skills
+    await page.getByTestId('check-js').check();
+    await page.getByTestId('check-python').check();
+    await page.getByTestId('check-java').check();
+
+    // Verify multiple selections
+    await expect(page.getByTestId('check-js')).toBeChecked();
+    await expect(page.getByTestId('check-python')).toBeChecked();
+    await expect(page.getByTestId('check-java')).toBeChecked();
+
+});
+
 })
 
