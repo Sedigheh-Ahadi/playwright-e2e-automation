@@ -1,8 +1,20 @@
 
 import { test, expect } from '@playwright/test';
+import { beforeEach } from 'node:test';
 
+async function fillRequiredFields(
+    page,
+    { email = 'giti@gmail.com', password = 'StrongPass123!', fullname= 'giti rahimi' } = {}
+  ) {
+    await page.getByTestId('input-fullname').fill(fullname);
+    await page.getByTestId('input-email').fill(email);
+    await page.getByTestId('input-password').fill(password);
+  }
+
+  
 test.describe('Registration Form Validation', () => {
 
+  
   test('should display validation errors for empty required fields', async ({ page }) => {
 
     await page.goto('https://playwrightlab.github.io');
@@ -28,16 +40,12 @@ test.describe('Registration Form Validation', () => {
 
   });
 
-  test('should successfully register with valid information', async ({ page }) => {
+  test.only('should successfully register with valid information', async ({ page }) => {
 
     await page.goto('https://playwrightlab.github.io');
 
     // Fill textboxes
-    await page.getByTestId('input-fullname').fill('Sedigheh Ahadi');
-
-    await page.getByTestId('input-email').fill('ahadi.sedi@example.com');
-
-    await page.getByTestId('input-password').fill('SecurePass123!');
+    fillRequiredFields(page);
 
     await page.getByTestId('input-phone').fill('+1 555 123 4567');
 
@@ -77,9 +85,7 @@ test.describe('Registration Form Validation', () => {
     await page.goto('https://playwrightlab.github.io');
 
     // Fill text fields
-    await page.getByTestId('input-fullname').fill('Sedighe ahadi');
-    await page.getByTestId('input-email').fill('ahadi.sedi@example.com');
-    await page.getByTestId('input-password').fill('Password123!');
+    fillRequiredFields(page);
     await page.getByTestId('input-phone').fill('+1 555 123 4567');
 
     // Select options
@@ -113,11 +119,9 @@ test.describe('Registration Form Validation', () => {
 
   test('should display an error for an invalid email format', async ({ page }) => {
 
-    page.goto('https://playwrightlab.github.io');
+    await page.goto('https://playwrightlab.github.io');
 
-    await page.getByTestId('input-fullname').fill('Sedighe ahadi');
-    await page.getByTestId('input-email').fill('ahadi.sediexample.com');
-    await page.getByTestId('input-password').fill('Password123!');
+    fillRequiredFields(page, {email:'inavalid-email'});
     await page.getByTestId('check-terms').check();
     await page.getByTestId('btn-register').click();
 
