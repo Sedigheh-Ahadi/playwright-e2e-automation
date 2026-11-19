@@ -14,10 +14,12 @@ async function fillRequiredFields(
   
 test.describe('Registration Form Validation', () => {
 
+  test.beforeEach(async ({ page }) => {
+      await page.goto('https://playwrightlab.github.io');
+    });
   
   test('should display validation errors for empty required fields', async ({ page }) => {
-
-    await page.goto('https://playwrightlab.github.io');
+  
 
     // Click Register without filling any fields
     await page.getByTestId('btn-register').click();
@@ -40,11 +42,9 @@ test.describe('Registration Form Validation', () => {
 
   });
 
-  test.only('should successfully register with valid information', async ({ page }) => {
+  test('should successfully register with valid information', async ({ page }) => {
 
-    await page.goto('https://playwrightlab.github.io');
-
-    // Fill textboxes
+        // Fill textboxes
     fillRequiredFields(page);
 
     await page.getByTestId('input-phone').fill('+1 555 123 4567');
@@ -82,7 +82,6 @@ test.describe('Registration Form Validation', () => {
 
   test('should reset all registration form fields', async ({ page }) => {
 
-    await page.goto('https://playwrightlab.github.io');
 
     // Fill text fields
     fillRequiredFields(page);
@@ -118,8 +117,6 @@ test.describe('Registration Form Validation', () => {
   });
 
   test('should display an error for an invalid email format', async ({ page }) => {
-
-    await page.goto('https://playwrightlab.github.io');
 
     fillRequiredFields(page, {email:'inavalid-email'});
     await page.getByTestId('check-terms').check();
