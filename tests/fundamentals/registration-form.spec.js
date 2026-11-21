@@ -212,5 +212,68 @@ test('should not allow more than 50 characters in full name', async ({ page }) =
 });
 
 
+
+
+
+test('should display an error when password is shorter than 8 characters', async ({ page }) => {
+
+      await page.goto('https://playwrightlab.github.io');
+
+    // Fill required fields with valid data, except password
+    await fillRequiredFields(page, {
+        password: 'Abc123!'
+    });
+
+    // Accept Terms & Conditions
+    await page.getByTestId('check-terms').check();
+
+    // Verify password length is less than 8
+    expect('Abc123!'.length).toBeLessThan(8);
+
+    // Click Register
+    await page.getByTestId('btn-register').click();
+
+    // Verify password validation error
+    const passwordError = page.getByTestId('error-password');
+
+    await expect(passwordError).toBeVisible();
+    await expect(passwordError).toHaveText('Password must be at least 8 characters');
+
+    // Verify registration was unsuccessful
+    await expect(page.getByTestId('form-success')).toBeHidden();
+
+});
+
+
+
+test('should allow selecting a country from the dropdown', async ({ page }) => {
+
+    const countryDropdown = page.getByTestId('select-country');
+
+    // Verify the default value
+    await expect(countryDropdown).toHaveValue('');
+
+    // Select Germany
+    await countryDropdown.selectOption('de');
+
+    // Verify the selected value
+    await expect(countryDropdown).toHaveValue('de');
+
+    // Verify the selected option text
+    await expect(countryDropdown.locator('option:checked'))
+        .toHaveText('Germany');
+
+    // Change the selected country to France
+    await countryDropdown.selectOption('fr');
+
+    // Verify the new selection
+    await expect(countryDropdown).toHaveValue('fr');
+
+    await expect(countryDropdown.locator('option:checked'))
+        .toHaveText('France');
+
+});
+
+
 })
 
