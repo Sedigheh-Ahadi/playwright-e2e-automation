@@ -17,30 +17,7 @@ test.describe('Registration Form Validation', () => {
   test.beforeEach(async ({ page }) => {
       await page.goto('https://playwrightlab.github.io');
     });
-  
-  test('should display validation errors for empty required fields', async ({ page }) => {
-  
-
-    // Click Register without filling any fields
-    await page.getByTestId('btn-register').click();
-
-    // Verify validation messages
-    await expect(page.getByTestId('error-fullname')).not.toBeEmpty();
-    await expect(page.getByTestId('error-fullname')).toHaveText('Name is required');
-
-    await expect(page.getByTestId('error-email')).not.toBeEmpty();
-    await expect(page.getByTestId('error-email')).toHaveText('Valid email is required');
-
-    await expect(page.getByTestId('error-password')).not.toBeEmpty();
-    await expect(page.getByTestId('error-password')).toHaveText('Password must be at least 8 characters');
-
-
-    await expect(page.getByTestId('error-terms')).not.toBeEmpty();
-    await expect(page.getByTestId('error-terms')).toHaveText('You must accept the terms');
-    // Verify registration was not successful
-    await expect(page.getByTestId('form-success')).toBeHidden();
-
-  });
+   
 
   test('should successfully register with valid information', async ({ page }) => {
 
@@ -77,6 +54,30 @@ test.describe('Registration Form Validation', () => {
 
     // Verify successful registration
     await expect(page.getByTestId('form-success')).toBeVisible();
+
+  });
+
+   test('should display validation errors for empty required fields', async ({ page }) => {
+  
+
+    // Click Register without filling any fields
+    await page.getByTestId('btn-register').click();
+
+    // Verify validation messages
+    await expect(page.getByTestId('error-fullname')).not.toBeEmpty();
+    await expect(page.getByTestId('error-fullname')).toHaveText('Name is required');
+
+    await expect(page.getByTestId('error-email')).not.toBeEmpty();
+    await expect(page.getByTestId('error-email')).toHaveText('Valid email is required');
+
+    await expect(page.getByTestId('error-password')).not.toBeEmpty();
+    await expect(page.getByTestId('error-password')).toHaveText('Password must be at least 8 characters');
+
+
+    await expect(page.getByTestId('error-terms')).not.toBeEmpty();
+    await expect(page.getByTestId('error-terms')).toHaveText('You must accept the terms');
+    // Verify registration was not successful
+    await expect(page.getByTestId('form-success')).toBeHidden();
 
   });
 
@@ -189,6 +190,24 @@ test('should display an error when password is shorter than 8 characters', async
 
     // Verify registration was unsuccessful
     await expect(page.getByTestId('form-success')).toBeHidden();
+
+});
+
+
+test('should not allow more than 50 characters in full name', async ({ page }) => {
+
+    const fullNameInput = page.getByTestId('input-fullname');
+
+    const longName = 'A'.repeat(60);
+
+    // Enter 60 characters
+    await fullNameInput.pressSequentially(longName);
+
+    // Verify that only 50 characters are accepted
+    await expect(fullNameInput).toHaveValue('A'.repeat(50));
+
+    // Verify the maximum length attribute
+    await expect(fullNameInput).toHaveAttribute('maxlength', '50');
 
 });
 
