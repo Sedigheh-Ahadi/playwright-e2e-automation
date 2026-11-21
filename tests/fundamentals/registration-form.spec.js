@@ -18,6 +18,43 @@ test.describe('Registration Form Validation', () => {
       await page.goto('https://playwrightlab.github.io');
     });
   
+
+    test('should reset all registration form fields', async ({ page }) => {
+
+
+    // Fill text fields
+    fillRequiredFields(page);
+    await page.getByTestId('input-phone').fill('+1 555 123 4567');
+
+    // Select options
+    await page.getByTestId('select-country').selectOption('de');
+    await page.getByTestId('radio-female').check();
+    await page.getByTestId('check-js').check();
+    await page.getByTestId('check-python').check();
+    await page.getByTestId('check-terms').check();
+
+    // Fill the Bio field
+    await page.getByTestId('textarea-bio').fill('Playwright developer');
+
+    // Click Reset
+    await page.getByTestId('btn-reset').click();
+
+    // Verify text fields are empty
+    await expect(page.getByTestId('input-fullname')).toHaveValue('');
+    await expect(page.getByTestId('input-email')).toHaveValue('');
+    await expect(page.getByTestId('input-password')).toHaveValue('');
+    await expect(page.getByTestId('input-phone')).toHaveValue('');
+    await expect(page.getByTestId('textarea-bio')).toHaveValue('');
+
+    // Verify selections are reset
+    await expect(page.getByTestId('select-country')).toHaveValue('');
+    await expect(page.getByTestId('radio-female')).not.toBeChecked();
+    await expect(page.getByTestId('check-js')).not.toBeChecked();
+    await expect(page.getByTestId('check-python')).not.toBeChecked();
+    await expect(page.getByTestId('check-terms')).not.toBeChecked();
+
+  });
+
   test('should display validation errors for empty required fields', async ({ page }) => {
   
 
@@ -159,6 +196,69 @@ test('should allow selecting one gender and multiple skills', async ({ page }) =
     await expect(page.getByTestId('check-java')).toBeChecked();
 
 });
+
+
+
+
+test('should display an error when password is shorter than 8 characters', async ({ page }) => {
+
+      await page.goto('https://playwrightlab.github.io');
+
+    // Fill required fields with valid data, except password
+    await fillRequiredFields(page, {
+        password: 'Abc123!'
+    });
+
+    // Accept Terms & Conditions
+    await page.getByTestId('check-terms').check();
+
+    // Verify password length is less than 8
+    expect('Abc123!'.length).toBeLessThan(8);
+
+    // Click Register
+    await page.getByTestId('btn-register').click();
+
+    // Verify password validation error
+    const passwordError = page.getByTestId('error-password');
+
+    await expect(passwordError).toBeVisible();
+    await expect(passwordError).toHaveText('Password must be at least 8 characters');
+
+    // Verify registration was unsuccessful
+    await expect(page.getByTestId('form-success')).toBeHidden();
+
+});
+
+
+
+test('should allow selecting a country from the dropdown', async ({ page }) => {
+
+    const countryDropdown = page.getByTestId('select-country');
+
+    // Verify the default value
+    await expect(countryDropdown).toHaveValue('');
+
+    // Select Germany
+    await countryDropdown.selectOption('de');
+
+    // Verify the selected value
+    await expect(countryDropdown).toHaveValue('de');
+
+    // Verify the selected option text
+    await expect(countryDropdown.locator('option:checked'))
+        .toHaveText('Germany');
+
+    // Change the selected country to France
+    await countryDropdown.selectOption('fr');
+
+    // Verify the new selection
+    await expect(countryDropdown).toHaveValue('fr');
+
+    await expect(countryDropdown.locator('option:checked'))
+        .toHaveText('France');
+
+});
+
 
 })
 
