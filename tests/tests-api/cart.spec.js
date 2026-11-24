@@ -64,5 +64,115 @@ test.describe('Cart API - Integration Tests', () => {
         ).toBe(true);
     });
 
+    // Test 3: Replace an item in cart
+    test('should replace an existing cart item', async ({
+        cartApi,
+        productsApi
+    }) => {
+
+        const productsResponse = await productsApi.getAllProducts({
+            available: true
+        });
+
+        const products = await productsResponse.json();
+
+        expect(products.length).toBeGreaterThan(1);
+
+        const firstProduct = products[0];
+        const replacementProduct = products[1];
+
+        const cartResponse = await cartApi.createCart();
+        const { cartId } = await cartResponse.json();
+
+        await cartApi.addItem(cartId, {
+            productId: firstProduct.id
+        });
+
+        const itemsResponse = await cartApi.getCartItems(cartId);
+        const cartItems = await itemsResponse.json();
+
+        const cartItem = cartItems.find(
+            item => item.productId === firstProduct.id
+        );
+
+        expect(cartItem).toBeTruthy();
+
+        // Replace the existing product
+        const replaceResponse = await cartApi.replaceItem(
+            cartId,
+            cartItem.id,
+            {
+                productId: replacementProduct.id,
+                quantity: 2
+            }
+        );
+
+        expect(replaceResponse.status()).toBe(204);
+
+        // Verify replacement
+        const updatedItemsResponse = await cartApi.getCartItems(cartId);
+        const updatedItems = await updatedItemsResponse.json();
+
+        expect(
+            updatedItems.some(
+                item => item.productId === replacementProduct.id
+            )
+        ).toBe(true);
+
+        expect(
+            updatedItems.some(
+                item => item.productId === firstProduct.id
+            )
+        ).toBe(false);
+    });
+
+
+    // Test 4: Remove an item from cart
+    test('should remove an item from cart', async ({
+        cartApi,
+        productsApi
+    }) => {
+
+        const productsResponse = await productsApi.getAllProducts({
+            available: true
+        });
+
+        const products = await productsResponse.json();
+        const selectedProduct = products[0];
+
+        const cartResponse = await cartApi.createCart();
+        const { cartId } = await cartResponse.json();
+
+        await cartApi.addItem(cartId, {
+            productId: selectedProduct.id
+        });
+
+        const itemsResponse = await cartApi.getCartItems(cartId);
+        const cartItems = await itemsResponse.json();
+
+        const cartItem = cartItems.find(
+            item => item.productId === selectedProduct.id
+        );
+
+        expect(cartItem).toBeTruthy();
+
+        // Delete item
+        const deleteResponse = await cartApi.deleteItem(
+            cartId,
+            cartItem.id
+        );
+
+        expect(deleteResponse.status()).toBe(204);
+
+        // Verify item removal
+        const updatedItemsResponse = await cartApi.getCartItems(cartId);
+        const updatedItems = await updatedItemsResponse.json();
+
+        expect(
+            updatedItems.some(
+                item => item.productId === selectedProduct.id
+            )
+        ).toBe(false);
+    });
 
 });
