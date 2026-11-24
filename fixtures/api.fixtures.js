@@ -103,6 +103,16 @@ export const test = base.extend({
         },
         { scope: 'test' }
     ],
+      cartApi: [
+        async ({ apiRequest }, use) => {
+
+            const cartApi = new cartApi(apiRequest);
+
+            await use(cartApi);
+
+        },
+        { scope: 'test' }
+    ]
 
 });
 
