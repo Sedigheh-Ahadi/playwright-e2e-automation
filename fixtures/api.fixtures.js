@@ -3,6 +3,7 @@ import { test as base, expect } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { AuthAPI } from '../apis/AuthAPI.js';
 import { ProductsAPI } from '../apis/ProductsAPI.js';
+import { CartAPI } from '../apis/CartAPI.js';
 import { OrdersAPI } from '../apis/OrdersAPI.js';
 
 
@@ -108,7 +109,7 @@ export const test = base.extend({
       cartApi: [
         async ({ apiRequest }, use) => {
 
-            const cartApi = new cartApi(apiRequest);
+            const cartApi = new CartAPI(apiRequest);
 
             await use(cartApi);
 

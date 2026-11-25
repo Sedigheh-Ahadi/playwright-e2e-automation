@@ -95,10 +95,11 @@ test.describe('Cart API - Integration Tests', () => {
         expect(cartItem).toBeTruthy();
 
         // Update quantity
-        const updateResponse = await cartApi.updateItem(
+        const quantity=3;
+        const updateResponse = await cartApi.modifyItem(
             cartId,
             cartItem.id,
-            { quantity: 3 }
+            quantity
         );
 
         expect(updateResponse.status()).toBe(204);
@@ -173,6 +174,54 @@ test.describe('Cart API - Integration Tests', () => {
         expect(
             updatedItems.some(
                 item => item.productId === firstProduct.id
+            )
+        ).toBe(false);
+    });
+  
+    // Test 5: Remove an item from cart
+    test('should remove an item from cart', async ({
+        cartApi,
+        productsApi
+    }) => {
+
+        const productsResponse = await productsApi.getAllProducts({
+            available: true
+        });
+
+        const products = await productsResponse.json();
+        const selectedProduct = products[0];
+
+        const cartResponse = await cartApi.createCart();
+        const { cartId } = await cartResponse.json();
+
+        await cartApi.addItem(cartId, {
+            productId: selectedProduct.id
+        });
+
+        const itemsResponse = await cartApi.getCartItems(cartId);
+        const cartItems = await itemsResponse.json();
+
+        const cartItem = cartItems.find(
+            item => item.productId === selectedProduct.id
+        );
+
+        expect(cartItem).toBeTruthy();
+
+        // Delete item
+        const deleteResponse = await cartApi.deleteItem(
+            cartId,
+            cartItem.id
+        );
+
+        expect(deleteResponse.status()).toBe(204);
+
+        // Verify item removal
+        const updatedItemsResponse = await cartApi.getCartItems(cartId);
+        const updatedItems = await updatedItemsResponse.json();
+
+        expect(
+            updatedItems.some(
+                item => item.productId === selectedProduct.id
             )
         ).toBe(false);
     });
