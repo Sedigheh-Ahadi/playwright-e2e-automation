@@ -3,6 +3,8 @@ import { test as base, expect } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { AuthAPI } from '../apis/AuthAPI.js';
 import { ProductsAPI } from '../apis/ProductsAPI.js';
+import { OrdersAPI } from '../apis/OrdersAPI.js';
+
 
 
 
@@ -109,6 +111,17 @@ export const test = base.extend({
             const cartApi = new cartApi(apiRequest);
 
             await use(cartApi);
+
+        },
+        { scope: 'test' }
+    ],
+
+      orderApi: [
+        async ({ authenticatedApiRequest }, use) => {
+
+            const orderApi = new OrdersAPI(authenticatedApiRequest);
+
+            await use(orderApi);
 
         },
         { scope: 'test' }
